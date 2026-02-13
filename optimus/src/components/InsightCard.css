@@ -1,0 +1,77 @@
+.insight-card {
+  min-height: 208px;
+}
+
+.insight-card-tap {
+  position: relative;
+  width: 100%;
+  min-height: 208px;
+  text-align: left;
+  border: none;
+  border-radius: 24px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 14px 28px rgba(65, 46, 95, 0.14);
+  overflow: hidden;
+  cursor: pointer;
+  isolation: isolate;
+}
+
+.insight-watercolor-blob {
+  position: absolute;
+  inset: 0;
+  opacity: 0.75;
+  filter: saturate(1.08) blur(0.1px);
+  z-index: -2;
+}
+
+.insight-card-tap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0.6px, transparent 0.6px);
+  background-size: 6px 6px;
+  opacity: 0.22;
+  z-index: -1;
+}
+
+.insight-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.68rem;
+}
+
+.insight-icon {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+}
+
+.insight-kicker {
+  margin: 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(55, 38, 79, 0.72);
+}
+
+.insight-title {
+  margin: 0;
+  color: #382247;
+  font-size: 1.26rem;
+  line-height: 1.1;
+  font-family: 'Caveat', 'Bradley Hand', 'Segoe Print', cursive;
+  letter-spacing: 0.01em;
+}
+
+.insight-summary {
+  margin: 0.9rem 0 0.7rem;
+  color: #332240;
+  line-height: 1.45;
+}
+
+.insight-cta {
+  font-size: 0.84rem;
+  color: rgba(51, 34, 64, 0.74);
+  font-weight: 600;
+}
