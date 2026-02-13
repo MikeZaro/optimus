@@ -1,0 +1,139 @@
+.journey-canvas {
+  border-radius: 26px;
+  padding: 1rem;
+  background: rgba(13, 20, 38, 0.82);
+  border: 1px solid rgba(192, 206, 255, 0.28);
+}
+
+.journey-canvas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.journey-canvas-header h2,
+.journey-canvas-header p {
+  margin: 0;
+}
+
+.journey-canvas-header p {
+  color: #d3e0ff;
+  font-size: 0.9rem;
+}
+
+.journey-canvas-painting {
+  height: clamp(210px, 36vw, 300px);
+  border-radius: 22px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.journey-canvas-base {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 15% 38%, rgba(255, 170, 191, 0.32), transparent 36%),
+    radial-gradient(circle at 62% 20%, rgba(95, 182, 255, 0.35), transparent 40%),
+    radial-gradient(circle at 78% 70%, rgba(127, 255, 206, 0.3), transparent 42%),
+    radial-gradient(circle at 38% 74%, rgba(159, 109, 255, 0.36), transparent 45%),
+    #192744;
+}
+
+.journey-canvas-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(123, 83, 245, 0.5), rgba(53, 186, 232, 0.65));
+  filter: blur(1px);
+  transition: width 0.6s ease;
+}
+
+.journey-art-piece {
+  position: absolute;
+  font-size: 1.7rem;
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.journey-art-piece.unlocked {
+  opacity: 1;
+  transform: scale(1);
+  animation: splash-in 480ms ease-out;
+}
+
+.journey-canvas-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+.journey-canvas-progress-track {
+  flex: 1;
+  height: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.journey-canvas-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 133, 198, 0.65), rgba(106, 104, 255, 0.9));
+  transition: width 0.6s ease;
+}
+
+.journey-badge {
+  margin: 0.85rem 0 0;
+  color: #ffecad;
+  font-weight: 600;
+}
+
+.journey-canvas-confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.splash-dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, #8de7ff 45%, #fb85d5 100%);
+  opacity: 0;
+  animation: watercolor-burst 700ms ease-out forwards;
+}
+
+.journey-canvas-complete .journey-canvas-painting {
+  box-shadow: 0 0 0 1px rgba(255, 234, 176, 0.45), 0 0 34px rgba(167, 126, 255, 0.35);
+}
+
+@keyframes splash-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.55) translateY(10px);
+  }
+  75% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes watercolor-burst {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-14px) scale(1.2);
+  }
+}
