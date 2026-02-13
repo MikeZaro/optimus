@@ -7,6 +7,7 @@ import CalendarApp from './CalendarApp.jsx'
 import HabitsApp from './HabitsApp.jsx'
 import HealthApp from './HealthApp.jsx'
 import GoalsDashboard from './GoalsDashboard.jsx'
+import Journeys from './Journeys.jsx'
 
 // Simple router based on URL path
 // Use /chat for the Claude chat interface
@@ -14,6 +15,7 @@ import GoalsDashboard from './GoalsDashboard.jsx'
 // Use /health for the health dashboard
 // Use /calendar for the calendar
 // Use /goals-dashboard for the goals dashboard
+// Use /journeys for watercolor habit journeys
 // Use / for the productivity dashboard
 const path = window.location.pathname;
 const RootComponent = path === '/chat'
@@ -26,6 +28,8 @@ const RootComponent = path === '/chat'
   ? HealthApp
   : path === '/goals-dashboard'
   ? GoalsDashboard
+  : path === '/journeys'
+  ? Journeys
   : App;
 
 createRoot(document.getElementById('root')).render(

@@ -6,48 +6,42 @@
 
 .app-nav {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
   display: flex;
-  gap: 10px;
+  gap: 8px;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(13, 20, 37, 0.85);
   padding: 8px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
+  border-radius: 999px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(197, 211, 255, 0.25);
+  max-width: calc(100vw - 20px);
+  overflow-x: auto;
 }
 
 .app-nav button {
-  padding: 8px 16px;
+  padding: 8px 14px;
   border: none;
-  border-radius: 8px;
+  border-radius: 999px;
   background: transparent;
-  color: #374151;
-  font-size: 0.875rem;
-  font-weight: 500;
+  color: #d8e2ff;
+  font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .app-nav button:hover {
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea;
+  background: rgba(165, 185, 255, 0.16);
+  color: #f7f9ff;
 }
 
 .app-nav button.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #8f6afc 0%, #5fb6f6 100%);
   color: white;
-}
-
-@media (max-width: 768px) {
-  .app-nav {
-    top: 10px;
-    right: 10px;
-  }
-
-  .app-nav button {
-    padding: 6px 12px;
-    font-size: 0.8rem;
-  }
+  box-shadow: 0 5px 16px rgba(107, 113, 254, 0.42);
 }

@@ -27,6 +27,12 @@ function AppNav({ currentApp = 'dashboard' }) {
         Habits
       </button>
       <button
+        className={currentApp === 'journeys' ? 'active' : ''}
+        onClick={() => navigateTo('/journeys')}
+      >
+        Journeys
+      </button>
+      <button
         className={currentApp === 'chat' ? 'active' : ''}
         onClick={() => navigateTo('/chat')}
       >
