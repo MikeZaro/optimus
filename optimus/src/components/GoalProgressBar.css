@@ -1,0 +1,319 @@
+/* ========================================
+   Goal Progress Bar - Duolingo Style
+   ======================================== */
+
+.goal-progress-bar {
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f2640 100%);
+  border: 2px solid #2d4a6d;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* State-based styling */
+.goal-progress-bar.perfect {
+  border-color: #ffd700;
+  background: linear-gradient(135deg, #2a3a1f 0%, #1a2a0f 100%);
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+  animation: perfect-glow 2s ease-in-out infinite;
+}
+
+@keyframes perfect-glow {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 6px 30px rgba(255, 215, 0, 0.5);
+  }
+}
+
+.goal-progress-bar.excellent {
+  border-color: #4facfe;
+  box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+}
+
+.goal-progress-bar.good {
+  border-color: #43e97b;
+  box-shadow: 0 4px 12px rgba(67, 233, 123, 0.2);
+}
+
+/* Header section */
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.progress-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.progress-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  animation: progress-icon-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes progress-icon-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.progress-text {
+  flex: 1;
+}
+
+.progress-title {
+  margin: 0 0 0.3rem 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #f3f6ff;
+}
+
+.progress-subtext {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #b8c5d8;
+}
+
+.progress-percentage {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #f3f6ff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  min-width: 90px;
+  text-align: right;
+}
+
+/* Progress bar */
+.progress-bar-container {
+  position: relative;
+  width: 100%;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  overflow: visible;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1.25rem;
+}
+
+.progress-bar-fill {
+  position: relative;
+  height: 100%;
+  background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+  border-radius: 12px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 12px rgba(79, 172, 254, 0.5);
+  overflow: visible;
+}
+
+/* State-based fill colors */
+.goal-progress-bar.perfect .progress-bar-fill {
+  background: linear-gradient(90deg, #ffd700 0%, #ffed4e 100%);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+}
+
+.goal-progress-bar.excellent .progress-bar-fill {
+  background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+  box-shadow: 0 0 15px rgba(79, 172, 254, 0.5);
+}
+
+.goal-progress-bar.good .progress-bar-fill {
+  background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+  box-shadow: 0 0 12px rgba(67, 233, 123, 0.4);
+}
+
+.goal-progress-bar.building .progress-bar-fill {
+  background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+  box-shadow: 0 0 10px rgba(240, 147, 251, 0.4);
+}
+
+/* Shimmer effect for perfect */
+.shimmer-overlay {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer-slide 2s infinite;
+}
+
+@keyframes shimmer-slide {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 200%;
+  }
+}
+
+/* Milestone markers */
+.milestone-markers {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.milestone-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.milestone-marker.reached {
+  background: white;
+  border-color: white;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+  animation: milestone-pop 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes milestone-pop {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+  }
+  60% {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.milestone-icon {
+  font-size: 0.7rem;
+  color: #10b981;
+  font-weight: bold;
+}
+
+/* Goal counts */
+.goal-counts {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.count-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+button.count-item {
+  font-family: inherit;
+}
+
+.count-item.clickable {
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.count-item.clickable:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(16, 185, 129, 0.14);
+  border-color: rgba(16, 185, 129, 0.45);
+}
+
+.count-item:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.count-number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #f3f6ff;
+  line-height: 1;
+}
+
+.count-label {
+  font-size: 0.85rem;
+  color: #93a8c1;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.count-item.active .count-number {
+  color: #4facfe;
+}
+
+.count-item.completed .count-number {
+  color: #10b981;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .goal-progress-bar {
+    padding: 1.25rem;
+  }
+
+  .progress-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .progress-percentage {
+    align-self: flex-end;
+    font-size: 2rem;
+  }
+
+  .progress-icon {
+    font-size: 2rem;
+  }
+
+  .progress-title {
+    font-size: 1.2rem;
+  }
+
+  .progress-subtext {
+    font-size: 0.85rem;
+  }
+
+  .goal-counts {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .count-item {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+  }
+
+  .count-number {
+    font-size: 1.6rem;
+  }
+}

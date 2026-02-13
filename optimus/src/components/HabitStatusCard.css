@@ -1,0 +1,184 @@
+/* ========================================
+   Habit Status Card - Duolingo Style
+   ======================================== */
+
+.habit-status-card {
+  position: relative;
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.habit-status-card:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 2px;
+}
+
+.habit-status-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.1), transparent);
+  pointer-events: none;
+}
+
+/* Glow effect for completed state */
+.habit-status-card.glow {
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.3),
+    0 0 60px rgba(245, 87, 108, 0.4),
+    0 0 100px rgba(240, 147, 251, 0.2);
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow:
+      0 10px 40px rgba(0, 0, 0, 0.3),
+      0 0 60px rgba(245, 87, 108, 0.4),
+      0 0 100px rgba(240, 147, 251, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 10px 40px rgba(0, 0, 0, 0.3),
+      0 0 80px rgba(245, 87, 108, 0.6),
+      0 0 120px rgba(240, 147, 251, 0.4);
+  }
+}
+
+/* Pulse animation for at-risk state */
+.habit-status-card.pulse {
+  animation: warning-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes warning-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+/* Confetti animation */
+.confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: -10px;
+  border-radius: 50%;
+  animation: confetti-fall 3s linear forwards;
+}
+
+@keyframes confetti-fall {
+  to {
+    transform: translateY(500px) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* Card Content */
+.status-card-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.status-emoji {
+  font-size: 4rem;
+  line-height: 1;
+  animation: emoji-bounce 2s ease-in-out infinite;
+}
+
+@keyframes emoji-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.status-text {
+  flex: 1;
+}
+
+.status-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.status-subtitle {
+  margin: 0;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.status-action-btn {
+  padding: 1rem 2rem;
+  background: white;
+  border: none;
+  border-radius: 12px;
+  color: #667eea;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.status-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.status-action-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .habit-status-card {
+    padding: 1.5rem;
+  }
+
+  .status-card-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .status-emoji {
+    font-size: 3rem;
+  }
+
+  .status-title {
+    font-size: 1.5rem;
+  }
+
+  .status-subtitle {
+    font-size: 1rem;
+  }
+}

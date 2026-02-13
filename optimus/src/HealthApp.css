@@ -1,0 +1,130 @@
+.health-app {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #f3f6ff;
+}
+
+.health-header {
+  text-align: center;
+  margin-top: 4.5rem;
+  margin-bottom: 2rem;
+}
+
+.health-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.health-date {
+  font-size: 1.1rem;
+  color: #93a8c1;
+}
+
+.health-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
+}
+
+.health-btn.primary {
+  padding: 1rem 1.75rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.health-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Metrics grid - following goal-tiles-container pattern */
+.health-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  position: relative;
+  isolation: isolate;
+}
+
+.health-metrics-grid::before {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  border-radius: 18px;
+  z-index: -1;
+  background:
+    linear-gradient(135deg, rgba(79, 172, 254, 0.08), rgba(118, 75, 162, 0.08)),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.02) 0 18px,
+      rgba(255, 255, 255, 0.01) 18px 36px
+    );
+  border: 1px solid rgba(144, 170, 205, 0.14);
+}
+
+/* Workouts section */
+.health-workouts {
+  margin-top: 3rem;
+}
+
+.health-workouts h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.workout-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.workout-card {
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f2640 100%);
+  border: 2px solid #2d4a6d;
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+}
+
+.workout-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.workout-icon {
+  font-size: 2.5rem;
+}
+
+.workout-details h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.2rem;
+}
+
+.workout-details p {
+  margin: 0;
+  color: #93c5fd;
+  font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .health-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .health-header h1 {
+    font-size: 2rem;
+  }
+}

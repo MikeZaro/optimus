@@ -1,0 +1,310 @@
+/* ========================================
+   Habit Tile - Duolingo Style
+   ======================================== */
+
+.habit-tile {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f2640 100%);
+  border: 2px solid #2d4a6d;
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.habit-tile:hover {
+  transform: translateX(4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Tier-based border colors */
+.habit-tile.tier-none {
+  border-color: #3d4f6d;
+}
+
+.habit-tile.tier-starter {
+  border-color: #5a7fa8;
+}
+
+.habit-tile.tier-building {
+  border-color: #4facfe;
+  box-shadow: 0 4px 12px rgba(79, 172, 254, 0.2);
+}
+
+.habit-tile.tier-strong {
+  border-color: #f5a623;
+  box-shadow: 0 4px 12px rgba(245, 166, 35, 0.3);
+  background: linear-gradient(135deg, #2a4a70 0%, #1a3050 100%);
+}
+
+.habit-tile.tier-legendary {
+  border-color: #f5576c;
+  box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+  background: linear-gradient(135deg, #3a2a50 0%, #2a1a40 100%);
+}
+
+/* Completed state */
+.habit-tile.completed {
+  background: linear-gradient(135deg, #1e4a3f 0%, #0f3a30 100%);
+  border-color: #10b981;
+}
+
+/* Missed/at-risk state */
+.habit-tile.missed {
+  opacity: 0.7;
+  filter: saturate(0.5);
+  border-color: #ef4444;
+  border-style: dashed;
+}
+
+/* Animation state */
+.habit-tile.animating {
+  animation: tile-celebrate 0.6s ease-out;
+}
+
+@keyframes tile-celebrate {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Icon */
+.habit-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.icon-emoji {
+  font-size: 1.8rem;
+}
+
+/* Habit info */
+.habit-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.habit-name {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #f3f6ff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.habit-time {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #93c5fd;
+  text-transform: capitalize;
+}
+
+/* Streak badge */
+.habit-streak-container {
+  display: flex;
+  align-items: center;
+}
+
+.streak-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  border: 2px solid;
+  transition: all 0.3s ease;
+}
+
+/* Tier-based streak badge colors */
+.streak-badge.tier-none {
+  border-color: #4a5568;
+}
+
+.streak-badge.tier-starter {
+  border-color: #5a7fa8;
+  background: rgba(90, 127, 168, 0.1);
+}
+
+.streak-badge.tier-building {
+  border-color: #4facfe;
+  background: rgba(79, 172, 254, 0.15);
+}
+
+.streak-badge.tier-strong {
+  border-color: #f5a623;
+  background: rgba(245, 166, 35, 0.15);
+  animation: streak-glow-gold 2s ease-in-out infinite;
+}
+
+.streak-badge.tier-legendary {
+  border-color: #f5576c;
+  background: rgba(245, 87, 108, 0.15);
+  animation: streak-glow-legendary 2s ease-in-out infinite;
+}
+
+@keyframes streak-glow-gold {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(245, 166, 35, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(245, 166, 35, 0.5);
+  }
+}
+
+@keyframes streak-glow-legendary {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(245, 87, 108, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(245, 87, 108, 0.6);
+  }
+}
+
+.streak-flame {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.streak-number {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #f3f6ff;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Complete button */
+.habit-complete-btn {
+  width: 44px;
+  height: 44px;
+  background: rgba(16, 185, 129, 0.2);
+  border: 3px solid #10b981;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1.5rem;
+}
+
+.habit-complete-btn:hover:not(:disabled) {
+  transform: scale(1.1);
+  background: rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+}
+
+.habit-complete-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.habit-complete-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.habit-complete-btn.done {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-color: #10b981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.check-icon {
+  color: white;
+  font-weight: bold;
+}
+
+.circle-icon {
+  color: #10b981;
+  font-size: 2rem;
+}
+
+/* Ripple effect */
+.ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.3);
+  transform: translate(-50%, -50%);
+  animation: ripple-expand 1s ease-out forwards;
+  pointer-events: none;
+}
+
+.ripple-1 {
+  animation-delay: 0s;
+}
+
+.ripple-2 {
+  animation-delay: 0.1s;
+}
+
+.ripple-3 {
+  animation-delay: 0.2s;
+}
+
+@keyframes ripple-expand {
+  from {
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  to {
+    width: 600px;
+    height: 600px;
+    opacity: 0;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .habit-tile {
+    grid-template-columns: auto 1fr auto;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+  }
+
+  .habit-streak-container {
+    grid-column: 1 / -1;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+
+  .habit-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .icon-emoji {
+    font-size: 1.5rem;
+  }
+
+  .habit-name {
+    font-size: 1rem;
+  }
+}

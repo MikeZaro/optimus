@@ -1,0 +1,173 @@
+.health-metric-card {
+  position: relative;
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f2640 100%);
+  border: 2px solid #2d4a6d;
+  border-radius: 20px;
+  padding: 1.5rem;
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow: hidden;
+}
+
+.health-metric-card:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+}
+
+.health-metric-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.14), transparent 38%),
+    linear-gradient(115deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.03) 0 10px,
+      rgba(255, 255, 255, 0.01) 10px 20px
+    );
+  pointer-events: none;
+}
+
+.health-metric-card::after {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -18%;
+  width: 230px;
+  height: 230px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--metric-glow, rgba(79, 172, 254, 0.25)) 0%, transparent 68%);
+  pointer-events: none;
+  transform: rotate(8deg);
+  transition: transform 0.3s ease;
+}
+
+.health-metric-card:hover::after {
+  transform: rotate(0deg) scale(1.05);
+}
+
+/* Type-specific border colors */
+.health-metric-card.metric-steps {
+  --metric-glow: rgba(79, 172, 254, 0.34);
+  --metric-accent: #4facfe;
+  border-color: #4facfe;
+  box-shadow: 0 6px 18px rgba(79, 172, 254, 0.26);
+}
+
+.health-metric-card.metric-sleep {
+  --metric-glow: rgba(170, 105, 255, 0.32);
+  --metric-accent: #b57cff;
+  border-color: #764ba2;
+  box-shadow: 0 6px 18px rgba(118, 75, 162, 0.28);
+}
+
+.health-metric-card.metric-calories {
+  --metric-glow: rgba(255, 117, 106, 0.34);
+  --metric-accent: #ff756a;
+  border-color: #f5576c;
+  box-shadow: 0 6px 18px rgba(245, 87, 108, 0.28);
+}
+
+.health-metric-card.metric-heart_rate {
+  --metric-glow: rgba(67, 233, 123, 0.34);
+  --metric-accent: #43e97b;
+  border-color: #43e97b;
+  box-shadow: 0 6px 18px rgba(67, 233, 123, 0.28);
+}
+
+.metric-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.metric-emoji {
+  font-size: 2rem;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.35));
+}
+
+.metric-title {
+  margin: 0;
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: #f3f6ff;
+  letter-spacing: 0.01em;
+}
+
+.metric-value {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.value-number {
+  font-size: 2.65rem;
+  font-weight: 800;
+  color: #f3f6ff;
+  line-height: 1;
+  text-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.value-unit {
+  font-size: 1rem;
+  color: #b5c8df;
+  font-weight: 600;
+}
+
+.metric-progress {
+  position: relative;
+  z-index: 1;
+  margin-top: 0.5rem;
+}
+
+.progress-bar-mini {
+  width: 100%;
+  height: 9px;
+  background: rgba(4, 12, 25, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-fill-mini {
+  height: 100%;
+  background: linear-gradient(90deg, var(--metric-accent, #4facfe), #00f2fe);
+  border-radius: 999px;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 10px var(--metric-accent, #4facfe);
+}
+
+.progress-text-mini {
+  font-size: 0.85rem;
+  color: #c4ddff;
+  font-weight: 600;
+}
+
+.metric-trend {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  color: var(--metric-accent, #4facfe);
+  opacity: 0.95;
+}
+
+.sparkline {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 2px 7px rgba(0, 0, 0, 0.25));
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .value-number {
+    font-size: 2rem;
+  }
+}

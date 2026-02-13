@@ -1,0 +1,124 @@
+.health-status-card {
+  position: relative;
+  border-radius: 20px;
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 140px;
+}
+
+/* State-based gradients */
+.health-status-card.excellent-day {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  box-shadow: 0 0 60px rgba(67, 233, 123, 0.3);
+}
+
+.health-status-card.good-day {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  box-shadow: 0 0 60px rgba(79, 172, 254, 0.3);
+}
+
+.health-status-card.moderate-day {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  box-shadow: 0 0 60px rgba(240, 147, 251, 0.3);
+}
+
+.health-status-card.low-activity {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.health-status-card.no-data {
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f2640 100%);
+  border: 2px solid #2d4a6d;
+}
+
+.health-status-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  padding-right: 100px;
+}
+
+.status-emoji-large {
+  font-size: 4.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+  animation: health-emoji-float 3s ease-in-out infinite;
+}
+
+@keyframes health-emoji-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.status-text-large {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.status-title-large {
+  margin: 0 0 0.5rem 0;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+.status-subtitle-large {
+  margin: 0;
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 500;
+}
+
+/* Activity ring indicator */
+.health-ring-indicator {
+  position: absolute;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 80px;
+  height: 80px;
+}
+
+.ring-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .health-status-card {
+    padding: 1.75rem;
+  }
+
+  .health-status-content {
+    flex-direction: column;
+    text-align: center;
+    padding-right: 0;
+  }
+
+  .status-emoji-large {
+    font-size: 3.5rem;
+  }
+
+  .status-title-large {
+    font-size: 1.75rem;
+  }
+
+  .health-ring-indicator {
+    position: static;
+    transform: none;
+    margin: 1rem auto 0;
+  }
+}
