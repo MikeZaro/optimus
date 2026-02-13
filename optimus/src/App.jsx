@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import { supabase } from './supabaseClient'
+import InsightsFeed from './components/InsightsFeed'
 
 const todayPrinciple = 'Execute the bottleneck, then keep moving.'
 
@@ -398,6 +399,8 @@ function App() {
           />
         </svg>
       </section>
+
+      <InsightsFeed />
 
       <footer className="home-footer">
         <button className="talk-button" onClick={() => console.log('Talk entry triggered')}>
