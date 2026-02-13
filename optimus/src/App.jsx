@@ -1,280 +1,414 @@
-﻿import { useEffect, useMemo, useState } from 'react';
-import { supabase } from './supabaseClient';
-import WatercolorHeatmapRow from './components/WatercolorHeatmapRow';
-import MoodCheckin from './components/MoodCheckin';
+import { useState, useEffect } from 'react'
+import './App.css'
+import { supabase } from './supabaseClient'
 
-const HEATMAP_COLORS = ['#FF6B6B', '#00D4FF', '#FFD60A', '#D81E5B', '#A2FF00'];
-
-const toDateKeyLocal = (date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
-
-const normalizeDateKey = (raw) => {
-  if (!raw) return null;
-  if (typeof raw === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
-
-  const date = new Date(raw);
-  if (Number.isNaN(date.getTime())) return null;
-  return toDateKeyLocal(date);
-};
-
-const buildTrailingDateKeys = (days) => {
-  const keys = [];
-  const today = new Date();
-
-  for (let offset = days - 1; offset >= 0; offset -= 1) {
-    const d = new Date(today);
-    d.setDate(today.getDate() - offset);
-    keys.push(toDateKeyLocal(d));
-  }
-
-  return keys;
-};
+const todayPrinciple = 'Execute the bottleneck, then keep moving.'
 
 function App() {
-  const [timeframe, setTimeframe] = useState('week');
-  const [selectedDateKey, setSelectedDateKey] = useState(toDateKeyLocal(new Date()));
-  const [habits, setHabits] = useState([]);
-  const [completedByHabit, setCompletedByHabit] = useState({});
-  const [consistencyLoading, setConsistencyLoading] = useState(true);
+  const [scoreboard, setScoreboard] = useState([])
+  const [tasksByDomain, setTasksByDomain] = useState({})
+  const [progressPoints, setProgressPoints] = useState([])
+  const [completed, setCompleted] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [weeklyStats, setWeeklyStats] = useState(null)
+  const [showHistory, setShowHistory] = useState(false)
 
-  const dateKeys = useMemo(
-    () => (timeframe === 'week' ? buildTrailingDateKeys(7) : buildTrailingDateKeys(31)),
-    [timeframe]
-  );
+  const today = new Date()
+  const formattedDate = today.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  })
 
+  // Load data from Supabase on page load
   useEffect(() => {
-    setSelectedDateKey(toDateKeyLocal(new Date()));
-  }, []);
+    loadData()
+    loadWeeklyStats()
+  }, [])
 
-  useEffect(() => {
-    const loadConsistency = async () => {
-      setConsistencyLoading(true);
-      try {
-        let habitsData = [];
-        const { data: activeHabits, error: activeHabitsError } = await supabase
-          .from('habits')
-          .select('id, title, status, created_at')
-          .eq('status', 'active')
-          .order('created_at', { ascending: true });
+  const loadData = async () => {
+    try {
+      // Fetch tasks
+      const { data: tasksData, error: tasksError } = await supabase
+        .from('tasks')
+        .select('*')
+      
+      if (tasksError) throw tasksError
+      
+      // Fetch streaks
+      const { data: streaksData, error: streaksError } = await supabase
+        .from('streaks')
+        .select('*')
+      
+      if (streaksError) throw streaksError
+      
+      // Fetch progress
+      const { data: progressData, error: progressError } = await supabase
+        .from('daily_progress')
+        .select('progress_points')
+        .order('date', { ascending: true })
+        .limit(30)
 
-        if (activeHabitsError) {
-          const { data: fallbackHabits, error: fallbackHabitsError } = await supabase
-            .from('habits')
-            .select('id, title, created_at')
-            .order('created_at', { ascending: true });
+      if (progressError) throw progressError
 
-          if (fallbackHabitsError) throw fallbackHabitsError;
-          habitsData = fallbackHabits || [];
-        } else {
-          habitsData = activeHabits || [];
-        }
+      // Organize tasks by domain
+      const organized = {}
+      tasksData.forEach((task) => {
+        if (!organized[task.domain]) organized[task.domain] = []
+        organized[task.domain].push({
+          id: task.id,
+          text: task.text,
+          bottleneck: task.is_bottleneck,
+        })
+      })
+      setTasksByDomain(organized)
 
-        const todayKey = toDateKeyLocal(new Date());
-        const since = new Date();
-        since.setDate(since.getDate() - 120);
-        const sinceKey = toDateKeyLocal(since);
+      // Set scoreboard from streaks
+      setScoreboard(streaksData || [])
 
-        let logs = [];
-        const { data: logsData, error: logsError } = await supabase
-          .from('habits_logs')
-          .select('habit_id, date, completed')
-          .gte('date', sinceKey)
-          .lte('date', todayKey);
+      // Set progress points
+      const points = progressData?.map((p) => p.progress_points) || []
+      setProgressPoints(points)
 
-        if (logsError) {
-          const { data: completionsData, error: completionsError } = await supabase
-            .from('habit_completions')
-            .select('habit_id, completion_date, completed_at, created_at')
-            .gte('completion_date', sinceKey);
+      setLoading(false)
+    } catch (error) {
+      console.error('Error loading data:', error)
+      alert('Error loading data from Supabase. Check console for details.')
+      setLoading(false)
+    }
+  }
 
-          if (completionsError) {
-            console.warn('[Consistency] habits_logs and habit_completions fallback both unavailable:', {
-              logsError,
-              completionsError,
-            });
-            logs = [];
-          } else {
-            logs = (completionsData || []).map((row) => ({
-              habit_id: row.habit_id,
-              date: row.completion_date || row.completed_at || row.created_at,
-              completed: true,
-            }));
-          }
-        } else {
-          logs = logsData || [];
-        }
+  const loadWeeklyStats = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('daily_logs')
+        .select('*')
+        .order('date', { ascending: false })
+        .limit(7)
 
-        const completedMap = {};
-        const usage = {};
-
-        logs.forEach((log) => {
-          const habitId = log.habit_id;
-          const dateKey = normalizeDateKey(log.date);
-          const completed = log.completed !== false;
-
-          if (!habitId || !dateKey || !completed) return;
-
-          if (!completedMap[habitId]) completedMap[habitId] = {};
-          completedMap[habitId][dateKey] = true;
-          usage[habitId] = (usage[habitId] || 0) + 1;
-        });
-
-        const sortedHabits = [...habitsData].sort((a, b) => {
-          const byUsage = (usage[b.id] || 0) - (usage[a.id] || 0);
-          if (byUsage !== 0) return byUsage;
-          return (a.title || '').localeCompare(b.title || '');
-        });
-
-        setHabits(sortedHabits);
-        setCompletedByHabit(completedMap);
-      } catch (error) {
-        console.error('Error loading consistency heatmap data:', error);
-        setHabits([]);
-        setCompletedByHabit({});
-      } finally {
-        setConsistencyLoading(false);
+      if (error) {
+        console.error('Error loading weekly stats:', error)
+        return
       }
-    };
 
-    loadConsistency();
-  }, []);
+      if (data && data.length > 0) {
+        const totalCompleted = data.reduce((sum, day) => sum + day.tasks_completed, 0)
+        const totalTasks = data.reduce((sum, day) => sum + day.total_tasks, 0)
+        const avgCompletionRate = totalTasks > 0 ? (totalCompleted / totalTasks) * 100 : 0
+        
+        setWeeklyStats({
+          daysLogged: data.length,
+          totalCompleted,
+          avgCompletionRate: Math.round(avgCompletionRate),
+          recentLogs: data
+        })
+      }
+    } catch (error) {
+      console.error('Error loading weekly stats:', error)
+    }
+  }
+
+  const handleTaskToggle = (id) => {
+    setCompleted((prev) =>
+      prev.includes(id) ? prev.filter((taskId) => taskId !== id) : [...prev, id]
+    )
+  }
+
+  const logToday = async () => {
+    if (completed.length === 0) {
+      alert('No tasks completed today')
+      return
+    }
+
+    try {
+      console.log('Attempting to log tasks:', completed)
+      
+      const todayDate = new Date().toISOString().split('T')[0] // YYYY-MM-DD format
+      
+      // Step 1: Log individual task completions
+      const completionPromises = completed.map(taskId => 
+        supabase.from('task_completions').insert({
+          task_id: taskId,
+          completed_at: new Date().toISOString(),
+        })
+      )
+      
+      const completionResults = await Promise.all(completionPromises)
+      
+      // Check for errors in task completions
+      const completionErrors = completionResults.filter(result => result.error)
+      if (completionErrors.length > 0) {
+        console.error('Some task completions failed:', completionErrors)
+      }
+
+      // Step 2: Calculate metrics
+      const totalTasks = Object.values(tasksByDomain).flat().length
+      const bottlenecksCompleted = completed.filter(id => {
+        return Object.values(tasksByDomain)
+          .flat()
+          .find(t => t.id === id && t.bottleneck)
+      }).length
+
+      // Step 3: Create daily summary log (upsert to handle duplicate dates)
+      const { data: dailyLogData, error: dailyLogError } = await supabase
+        .from('daily_logs')
+        .upsert({
+          date: todayDate,
+          tasks_completed: completed.length,
+          total_tasks: totalTasks,
+          completed_task_ids: completed,
+          bottlenecks_completed: bottlenecksCompleted,
+        }, {
+          onConflict: 'date'
+        })
+        .select()
+
+      if (dailyLogError) {
+        console.error('Error creating daily summary:', dailyLogError)
+        throw dailyLogError
+      }
+
+      console.log('Daily log created:', dailyLogData)
+
+      // Step 4: Update daily progress table
+      const progressScore = Math.round((completed.length / totalTasks) * 100)
+      
+      const { data: progressData, error: progressError } = await supabase
+        .from('daily_progress')
+        .upsert({
+          date: todayDate,
+          progress_points: progressScore,
+        }, {
+          onConflict: 'date'
+        })
+        .select()
+
+      if (progressError) {
+        console.error('Error updating daily progress:', progressError)
+        throw progressError
+      }
+
+      console.log('Progress updated:', progressData)
+
+      // Step 5: Update streaks (if applicable)
+      await updateStreaks(completed)
+
+      alert(`Progress logged successfully!\n${completed.length} tasks completed\nProgress score: ${progressScore}`)
+      setCompleted([])
+      
+      // Reload data to reflect changes
+      await loadData()
+      await loadWeeklyStats()
+      
+    } catch (error) {
+      console.error('Error logging today:', error)
+      alert('Error saving progress. Check console for details.')
+    }
+  }
+
+  const updateStreaks = async (completedTaskIds) => {
+    try {
+      // Get the domains of completed tasks
+      const completedDomains = new Set()
+      
+      Object.entries(tasksByDomain).forEach(([domain, tasks]) => {
+        const domainHasCompletedTask = tasks.some(task => 
+          completedTaskIds.includes(task.id)
+        )
+        if (domainHasCompletedTask) {
+          completedDomains.add(domain)
+        }
+      })
+
+      // Update streak for each domain with completed tasks
+      for (const domain of completedDomains) {
+        const { data: currentStreak } = await supabase
+          .from('streaks')
+          .select('*')
+          .eq('domain', domain)
+          .single()
+
+        if (currentStreak) {
+          const newStreak = currentStreak.current_streak + 1
+          
+          await supabase
+            .from('streaks')
+            .update({ 
+              current_streak: newStreak,
+              last_updated: new Date().toISOString()
+            })
+            .eq('domain', domain)
+        }
+      }
+    } catch (error) {
+      console.error('Error updating streaks:', error)
+    }
+  }
+
+  const isAligned = (status) => {
+    if (status === 'aligned') return 'status-aligned'
+    if (status === 'neutral') return 'status-neutral'
+    return 'status-lagging'
+  }
+
+  const renderDomainTasks = (domain) => {
+    const tasks = tasksByDomain[domain] || []
+    return (
+      <section key={domain} className="task-domain">
+        <div className="task-header">
+          <div>
+            <h3>{domain}</h3>
+            {domain === 'Work' && <p className="muted">Conversion is limiting progress</p>}
+          </div>
+          <span className="task-count">
+            {tasks.filter((task) => completed.includes(task.id)).length} / {tasks.length}
+          </span>
+        </div>
+        <ul>
+          {tasks.slice(0, 3).map((task) => (
+            <li key={task.id}>
+              <button
+                className={`task-button ${task.bottleneck ? 'bottleneck' : ''} ${
+                  completed.includes(task.id) ? 'complete' : ''
+                }`}
+                onClick={() => handleTaskToggle(task.id)}
+              >
+                {task.text}
+              </button>
+              {task.bottleneck && <span className="bottleneck-tag">Bottleneck action</span>}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  const renderWeeklyStats = () => {
+    if (!weeklyStats) return null
+
+    return (
+      <section className="weekly-stats">
+        <div className="stats-header">
+          <p className="label">Weekly Overview</p>
+          <button 
+            className="view-history-btn"
+            onClick={() => setShowHistory(!showHistory)}
+          >
+            {showHistory ? 'Hide History' : 'View History'}
+          </button>
+        </div>
+        <div className="stats-grid">
+          <div className="stat-item">
+            <span className="stat-value">{weeklyStats.daysLogged}</span>
+            <span className="stat-label">Days Logged</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-value">{weeklyStats.totalCompleted}</span>
+            <span className="stat-label">Tasks Completed</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-value">{weeklyStats.avgCompletionRate}%</span>
+            <span className="stat-label">Avg Completion</span>
+          </div>
+        </div>
+        
+        {showHistory && (
+          <div className="history-list">
+            <h4>Recent Activity</h4>
+            {weeklyStats.recentLogs.map((log) => (
+              <div key={log.date} className="history-item">
+                <span className="history-date">
+                  {new Date(log.date).toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric' 
+                  })}
+                </span>
+                <span className="history-tasks">
+                  {log.tasks_completed}/{log.total_tasks} tasks
+                </span>
+                <span className="history-score">
+                  {Math.round((log.tasks_completed / log.total_tasks) * 100)}%
+                </span>
+                {log.bottlenecks_completed > 0 && (
+                  <span className="history-bottleneck">
+                    🎯 {log.bottlenecks_completed} bottleneck{log.bottlenecks_completed > 1 ? 's' : ''}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+    )
+  }
+
+  if (loading) return <div className="page">Loading...</div>
 
   return (
-    <div className="dashboard-watercolor">
-      <nav>
-        <ul className="nav-list">
-          <li><a href="#" className="nav-item active">Dashboard</a></li>
-          <li><a href="#" className="nav-item">Habits</a></li>
-          <li><a href="#" className="nav-item">Health</a></li>
-          <li><a href="#" className="nav-item">Claude Chat</a></li>
-          <li><a href="#" className="nav-item">Calendar</a></li>
-        </ul>
+    <div className="page">
+      <header className="orientation">
+        <div className="date">{formattedDate}</div>
+        <div className="principle">{todayPrinciple}</div>
+      </header>
+
+      <nav className="top-tab">
+        <div className="tab-link">
+          <a href="https://calendar.google.com" target="_blank" rel="noreferrer">
+            Calendar
+          </a>
+        </div>
       </nav>
 
-      <main>
-        <h1 className="section-title">Today</h1>
-        <MoodCheckin />
-
-        <div className="dashboard-grid watercolor-grid">
-          <button
-            type="button"
-            className="card card-clickable"
-            onClick={() => { window.location.pathname = '/health'; }}
-            aria-label="Open health dashboard and report"
-          >
-            <h2 className="section-title section-title-sm">Health</h2>
-            <div className="metric-grid">
-              <div className="metric">
-                <div className="metric-value splash-value">0</div>
-                <div className="metric-label">Steps</div>
-              </div>
-              <div className="metric">
-                <div className="metric-value splash-value">0.0h</div>
-                <div className="metric-label">Sleep</div>
-              </div>
-            </div>
-          </button>
-
-          <button
-            type="button"
-            className="card card-clickable"
-            onClick={() => { window.location.pathname = '/habits'; }}
-            aria-label="Open habits dashboard"
-          >
-            <h2 className="section-title section-title-sm">Habits</h2>
-            <p className="muted-text">Friday, February 13</p>
-            <div className="habit-content">
-              <strong>Play Guitar</strong>
-              <p className="muted-text habit-description">Play with a metronome for 15 minutes</p>
-              <button
-                className="btn btn-primary btn-watercolor"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  window.location.pathname = '/habits';
-                }}
-              >
-                + New Habit
-              </button>
-            </div>
-          </button>
-
-          <button
-            type="button"
-            className="card card-clickable"
-            onClick={() => { window.location.pathname = '/goals-dashboard'; }}
-            aria-label="Open goals dashboard"
-          >
-            <h2 className="section-title section-title-sm">Goals</h2>
-            <p className="muted-text">All goals in one place</p>
-            <div className="metric">
-              <div className="metric-value splash-value">18%</div>
-              <div className="metric-label">Weekly Progress</div>
-            </div>
-            <div className="progress-bar">
-              <div className="progress-fill" style={{ width: '18%' }} />
-            </div>
-          </button>
+      <section className="bottleneck-card">
+        <p className="label">Current Bottleneck</p>
+        <div className="bottleneck-content">
+          <strong>Work</strong>
+          <span className="muted">Conversion is limiting progress</span>
         </div>
+      </section>
 
-        <section className="card consistency-section">
-          <div className="consistency-header">
-            <h2 className="section-title section-title-sm consistency-title">Consistency</h2>
-            <div className="consistency-tabs" role="tablist" aria-label="Consistency timeframe">
-              <button
-                type="button"
-                className={`consistency-tab ${timeframe === 'week' ? 'active' : ''}`}
-                onClick={() => setTimeframe('week')}
-              >
-                This Week
-              </button>
-              <button
-                type="button"
-                className={`consistency-tab ${timeframe === 'month' ? 'active' : ''}`}
-                onClick={() => setTimeframe('month')}
-              >
-                This Month
-              </button>
-            </div>
+      <section className="scoreboard">
+        {scoreboard.map(({ domain, current_streak, status }) => (
+          <div key={domain} className={`score-card ${isAligned(status)}`}>
+            <p className="label">{domain}</p>
+            <div className="score-value">{current_streak} day streak</div>
+            <div className="status-dot" />
           </div>
+        ))}
+      </section>
 
-          {consistencyLoading ? (
-            <p className="muted-text">Loading consistency...</p>
-          ) : habits.length === 0 ? (
-            <p className="muted-text">No active habits yet. Create one to start your heatmap.</p>
-          ) : (
-            <div className="consistency-rows">
-              {habits.map((habit, idx) => (
-                <WatercolorHeatmapRow
-                  key={habit.id}
-                  habitName={habit.title}
-                  dateKeys={dateKeys}
-                  completedByDate={completedByHabit[habit.id] || {}}
-                  color={HEATMAP_COLORS[idx % HEATMAP_COLORS.length]}
-                  selectedDateKey={selectedDateKey}
-                  onSelectDate={setSelectedDateKey}
-                  timeframe={timeframe}
-                />
-              ))}
-            </div>
-          )}
-        </section>
+      {renderWeeklyStats()}
 
-        <div className="assistant-wrap card">
-          <input
-            className="assistant-input"
-            type="text"
-            placeholder="Type a message to the AI assistant..."
-          />
+      <section className="tasks">
+        {renderDomainTasks('Work')}
+        {renderDomainTasks('Personal')}
+        {renderDomainTasks('Education')}
+      </section>
+
+      <section className="progress">
+        <div className="progress-header">
+          <div>
+            <p className="label">Progress Snapshot</p>
+            <strong>Trajectory: Improving</strong>
+          </div>
         </div>
-      </main>
+        <svg viewBox="0 0 120 40" className="progress-graph">
+          <polyline
+            points={progressPoints.map((point, index) => `${(index / (progressPoints.length - 1)) * 120},${40 - point / 30 * 40}`).join(' ')}
+          />
+        </svg>
+      </section>
+
+      <footer className="home-footer">
+        <button className="talk-button" onClick={() => console.log('Talk entry triggered')}>
+          Talk
+        </button>
+        <button className="primary-button" onClick={logToday}>
+          Log Today
+        </button>
+      </footer>
     </div>
-  );
+  )
 }
 
-export default App;
-
-
+export default App
